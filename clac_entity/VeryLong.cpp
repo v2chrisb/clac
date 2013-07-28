@@ -25,8 +25,7 @@ TODO:
   This can be improved.
 
 + The technique used to do division and modulus is a hack I worked up myself. It is probably
-  buggy and inefficient. There is almost certainly a better way. I would look in Knuth to fix
-  this as well.
+  buggy and inefficient. I should probably implement "Algorithm D" in Knuth.
 
 + The code should be reviewed for thread safety.
 
@@ -67,17 +66,12 @@ static int is_white( char ch )
 //           Static Data
 //---------------------------------
 
-// The following static constants are public.
+// The following static constants are public. They exist as a convenience to the user.
 const VeryLong VeryLong::negative_one( -1L );
 const VeryLong VeryLong::zero( 0L );
 const VeryLong VeryLong::one(  1L );
 const VeryLong VeryLong::two(  2L );
 const VeryLong VeryLong::ten( 10L );
-
-// The follow static constants are private.
-const VeryLong::compute_type VeryLong::DIGIT_RANGE        = 65536UL;
-const int                    VeryLong::BITS_PER_LONGDIGIT = 16;
-const VeryLong::compute_type VeryLong::DIGIT_MASK         = 0xFFFF;
 
 
 //-------------------------------------

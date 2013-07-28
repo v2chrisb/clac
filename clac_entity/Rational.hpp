@@ -11,25 +11,49 @@ Rational is a template that uses any signed integral type to implement rational 
 
 #include <iostream>
 
-// The template parameter type must be a model of the "Integer" concept.
+ //! Rational numbers.
+ /*!
+  * This template allows you to create rational numbers for any suitable integer type. Here
+  * "suitable" means that it supports all the normal integer operations. It is required that
+  * certain integer literals (such as "0" and "1") be assignable to an object of type
+  * integer_type.
+  */
 template<typename integer_type>
 class Rational {
 
+    //! Writes a Rational to an output stream.
     template<typename T>
     friend std::ostream &operator<<( std::ostream &output, const Rational<T> &number );
 
+    //! Reads a Rational from an input stream.
     template<typename T>
     friend std::istream &operator>>( std::istream &input, Rational<T> &number );
 
 public:
+    //! Constructs a Rational from two integers.
+    /*!
+     * An attempt to construct a Rational with a denominator of zero is undefined.
+     */
     Rational( const integer_type &num = 0, const integer_type &denom = 1 );
 
-    const integer_type &get_numerator( ) const { return numerator; }
-    const integer_type &get_denominator( ) const { return denominator; }
+    //! Return the numerator of this Rational.
+    const integer_type &get_numerator( ) const
+        { return numerator; }
 
+    //! Return the denominator of this Rational.
+    const integer_type &get_denominator( ) const
+        { return denominator; }
+
+    //! Adds a Rational into 'this.'
     void operator+=( const Rational &right );
+
+    //! Subtracts a Rational from 'this.'
     void operator-=( const Rational &right );
+
+    //! Multiples a Rational by 'this.'
     void operator*=( const Rational &right );
+
+    //! Divides a Rational into 'this.' Division by zero is undefined.
     void operator/=( const Rational &right );
 
 private:
@@ -184,10 +208,10 @@ void Rational<integer_type>::reduce( )
 }
 
 
-// The constructor allows a Rational to be initialized with two integer_type objects. The default
-// value is O/1. Notice that if the resulting Rational is negative the numerator holds the sign.
-// Note that the compiler generated copy constructor, assignment operator, and destructor should
-// all be satisfactory.
+// The constructor allows a Rational to be initialized with two integer_type objects. Notice
+// that if the resulting Rational is negative the numerator holds the sign. Note that the
+// compiler generated copy constructor, assignment operator, and destructor should all be
+// satisfactory.
 //
 template<typename integer_type>
 Rational<integer_type>::Rational( const integer_type &num, const integer_type &denom ) :
