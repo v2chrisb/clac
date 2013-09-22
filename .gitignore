@@ -1,3 +1,9 @@
+# LaTeX generated files.
+*.aux
+*.log
+*.toc
+*.pdf
+
 # Open Watcom generated files.
 *.bak
 *.err
