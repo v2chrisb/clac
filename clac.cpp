@@ -351,7 +351,7 @@ void process_word( )
 
         try {
             // See if we got the null word.
-            if( new_word[0] == '\0' ) {
+            if( new_word[static_cast<std::size_t>(0)] == '\0' ) {
                 do_dup( global::the_stack( ) );
                 continue;
             }

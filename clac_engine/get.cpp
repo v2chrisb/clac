@@ -380,7 +380,7 @@ ListEntity *get_list( const string &word )
     else
         word_buffer = workspace.c_str( );
 
-    for( ; word_buffer[0] != '}'; ) {
+    for( ; word_buffer[static_cast<std::size_t>(0)] != '}'; ) {
         StringStream stream( (string( word_buffer )) );
         Entity *list_element = get_entity( stream );
         if( list_element != NULL )
@@ -413,11 +413,11 @@ MatrixEntity *get_matrix( const string &word )
         word_buffer = workspace.c_str( );
 
     for( ;; ) {
-        if( word_buffer[0] == '[' ) {
+        if( word_buffer[static_cast<std::size_t>(0)] == '[' ) {
             if( in_row ) error_message( "Cannot make a matrix of matrices" );
             else in_row = true;
         }
-        else if( word_buffer[0] == ']' ) {
+        else if( word_buffer[static_cast<std::size_t>(0)] == ']' ) {
             if( in_row ) {
                 row_count++;
                 column_count = 0;
