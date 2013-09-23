@@ -60,7 +60,7 @@ using namespace std;
 #include "scr.hpp"
 
 // Application specific.
-#include "CommandWindow.hpp"
+#include "ClacCommandWindow.hpp"
 #include "StackWindow.hpp"
 
 //===========================================
@@ -338,14 +338,11 @@ bool process_action( Stack &the_stack, char *word_buffer )
   }
 
 
-void process_word( )
+void process_words( )
 {
     EditBuffer new_word;
 
     while (1) {
-//         global::stack_view( ).show( );
-//         global::dir_view( ).show( );
-//         global::display_RAM( );
         new_word = global::word_source( ).next_word( ).c_str( );
         if( new_word.length( ) == 0 ) return;
 
@@ -366,7 +363,7 @@ void process_word( )
             if( new_object != NULL )
                 global::the_stack( ).push( new_object );
         }
-        catch( char *the_message ) {
+        catch( const char *the_message ) {
             error_message( "Exception caught! %s", the_message );
         }
     }
@@ -382,9 +379,10 @@ int Main( )
     SetUp the_program;
 
     scr::Manager  window_manager;
-    CommandWindow command_line( window_manager, 78, 1 );
-    StackWindow   stack_view( window_manager, 40, 10 );
+    StackWindow   stack_view( window_manager, 1, 1, 40, 10 );
+    ClacCommandWindow command_line( &window_manager, 15, 1, 78, 1 );
 
+    command_line.set_prompt( "=> " );
     stack_view.associate( &global::the_stack( ) );
     window_manager.input_loop( );
 
@@ -397,15 +395,13 @@ int Main( )
 
 int main( )
 {
-    int return_value = 0;
+    int return_value = EXIT_FAILURE;
 
     try {
         return_value = Main();
     }
     catch (...) {
         cerr << "Panic! Unhandled exception propagated through main()" << endl;
-        cin.get();
-        abort();
     }
     return return_value;
 }

@@ -23,8 +23,8 @@ class StackWindow : public scr::Window {
 
   public:
     // Be sure there is no association initially.
-    StackWindow( scr::Manager &M, int W, int H ) :
-        scr::Window( &M, 0, 0, W, H ), the_stack( NULL ) { }
+    StackWindow( scr::Manager &M, int R, int C, int W, int H ) :
+        scr::Window( &M, R, C, W, H ), the_stack( NULL ) { }
 
     // Associate this window with a stack object.
     void associate( Stack *object ) { the_stack = object; }
