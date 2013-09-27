@@ -7,8 +7,8 @@
 #include "global.hpp"
 #include "WordStream.hpp"
 
-// TODO: Fix this hack.
-extern void process_words( );
+// TODO: Fix this hack. [Move process_words and all associated code to this file?]
+extern bool process_words( );
 
 bool ClacCommandWindow::process_keystroke( int &key_code )
 {
@@ -19,7 +19,10 @@ bool ClacCommandWindow::process_keystroke( int &key_code )
     // Push the command text onto the master stream as a string of Clac command words.
     StringStream *words = new StringStream( command_text );
     global::word_source( ).push( words );
-    process_words( );
+    if( process_words( ) == false ) {
+        key_code = scr::K_ESC;
+        return false;
+    }
 
     // Prepare the command window for another command line.
     command_text.erase( );

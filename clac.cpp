@@ -134,7 +134,7 @@ SetUp::~SetUp( )
 //           Generic Operation Functions
 //=================================================
 
-void do_unary( Stack &the_stack, Entity *(Entity::*unary_operation)( ) const )
+static void do_unary( Stack &the_stack, Entity *(Entity::*unary_operation)( ) const )
 {
     // Get a pointer to the object on stack level zero.
     Entity *thing = the_stack.get( 0 );
@@ -149,7 +149,7 @@ void do_unary( Stack &the_stack, Entity *(Entity::*unary_operation)( ) const )
     }
 }
 
-void do_binary( Stack &the_stack, Entity *(Entity::*binary_operation)( const Entity * ) const )
+static void do_binary( Stack &the_stack, Entity *(Entity::*binary_operation)( const Entity * ) const )
 {
     Entity *left  = the_stack.get( 1 );
     Entity *right = the_stack.get( 0 );
@@ -195,7 +195,7 @@ struct BuiltinAction {
     void (*operation)( Stack & );
 };
 
-BuiltinBinary binary_words[] = {
+static BuiltinBinary binary_words[] = {
     { "+",      &Entity::plus              },
     { "-",      &Entity::minus             },
     { "*",      &Entity::multiply          },
@@ -211,7 +211,7 @@ BuiltinBinary binary_words[] = {
     { NULL,      NULL                      }
 };
 
-BuiltinUnary unary_words[] = {
+static BuiltinUnary unary_words[] = {
     { "abs",    &Entity::abs               },
     { "acos",   &Entity::acos              },
     { "alog",   &Entity::exp10             },
@@ -244,7 +244,7 @@ BuiltinUnary unary_words[] = {
     { NULL,      NULL                      }
 };
 
-BuiltinAction action_words[] = {
+static BuiltinAction action_words[] = {
     // Normal actions.
     { "bin",    do_bin      },
     { "clear",  do_clear    },
@@ -281,7 +281,10 @@ BuiltinAction action_words[] = {
     { "sr",     do_shift_right  },
     //{ "asr",    do_ashift_right },
 
-    // Off.
+    // Off. Currently the 'quit' command is handled in a special way to ensure that the window
+    // system is shut down properly. The other versions of "off" just produce a message telling
+    // the user to use the 'quit' command.
+    //
     { "exit",   do_off },
     { "off",    do_off },
     { "quit",   do_off },
@@ -289,12 +292,12 @@ BuiltinAction action_words[] = {
     { NULL, NULL }
 };
 
-bool process_binary( Stack &the_stack, char *word_buffer )
+static bool process_binary( Stack &the_stack, const std::string &word_buffer )
 {
     // Scan the list of builtin binary words.
     BuiltinBinary *bin_op = binary_words;
     while( bin_op->word != NULL ) {
-        if( strcmp( bin_op->word, word_buffer ) == 0 ) break;
+        if( bin_op->word == word_buffer ) break;
         bin_op++;
     }
 
@@ -306,12 +309,12 @@ bool process_binary( Stack &the_stack, char *word_buffer )
     return false;
 }
 
-bool process_unary( Stack &the_stack, char *word_buffer )
+static bool process_unary( Stack &the_stack, const std::string &word_buffer )
 {
     // Scan the list of built in unary words.
     BuiltinUnary *unary_op = unary_words;
     while( unary_op->word != NULL ) {
-        if( strcmp( unary_op->word, word_buffer ) == 0 ) break;
+        if( unary_op->word == word_buffer ) break;
         unary_op++;
     }
 
@@ -323,12 +326,12 @@ bool process_unary( Stack &the_stack, char *word_buffer )
     return false;
 }
 
-bool process_action( Stack &the_stack, char *word_buffer )
+static bool process_action( Stack &the_stack, const std::string &word_buffer )
 {
     // Scan the list of builtin action words.
     BuiltinAction *action_op = action_words;
     while( action_op->word != NULL ) {
-        if( strcmp( action_op->word, word_buffer ) == 0 ) break;
+        if( action_op->word == word_buffer ) break;
         action_op++;
     }
 
@@ -341,29 +344,40 @@ bool process_action( Stack &the_stack, char *word_buffer )
   }
 
 
-void process_words( )
+//! Process the words on the master stream, executing them one at a time.
+/*!
+ * This function continues working until the master stream is completely empty. Note that
+ * some words cause new WordStream objects to be pushed onto the master stream. This function
+ * continues until all of those streams are exhausted as well.
+ *
+ * \return true if the program should continue; false if the "quit" word was encountered.
+ */
+bool process_words( )
 {
     scr::Tracer( "process_words", 1 );
 
-    EditBuffer new_word;
-
     while (1) {
-        new_word = global::word_source( ).next_word( ).c_str( );
-        if( new_word.length( ) == 0 ) return;
+        std::string new_word( global::word_source( ).next_word( ) );
+
+        // The master stream is exhausted.
+        if( new_word.length( ) == 0 ) return true;
 
         try {
-            // See if we got the null word.
-            if( new_word[static_cast<std::size_t>(0)] == '\0' ) {
+            // See if we got the null word. [Can this ever happen?]
+            if( new_word[0] == '\0' ) {
                 do_dup( global::the_stack( ) );
                 continue;
             }
 
-            // See if it is a built in word.
-            if( process_binary( global::the_stack( ), new_word) == true ) continue;
-            if( process_unary ( global::the_stack( ), new_word) == true ) continue;
-            if( process_action( global::the_stack( ), new_word) == true ) continue;
+            // Should we quit?
+            if( new_word == "quit" ) return false;
 
-            StringStream stream( (string( new_word )) );
+            // See if it is a built in word.
+            if( process_binary( global::the_stack( ), new_word) ) continue;
+            if( process_unary ( global::the_stack( ), new_word) ) continue;
+            if( process_action( global::the_stack( ), new_word) ) continue;
+
+            StringStream stream( new_word );
             Entity *new_object = get_entity( stream );
             if( new_object != NULL )
                 global::the_stack( ).push( new_object );

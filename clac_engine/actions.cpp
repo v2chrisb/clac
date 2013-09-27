@@ -509,5 +509,5 @@ void do_ashift_right( Stack & )
 
 void do_off( Stack & )
 {
-    exit( 0 );
+    error_message( "Use 'quit' to terminate Clac" );
 }
