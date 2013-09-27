@@ -77,8 +77,8 @@ const char *WordStream::find_next_space( const char *string )
 // ---------------------
 
 /*!
- * This function finds the next word in the string word_source (pointed into by current_point).
- * Note that current_point is initialized by the constructor.
+ * Find the next word in the encapsulated string. The value of current_point marks where to
+ * start the search. Note that current_point is initialized by the constructor.
  */
 std::string StringStream::next_word( )
 {
@@ -87,21 +87,19 @@ std::string StringStream::next_word( )
     // Find the start of the next word.
     current_point = find_next_word( current_point );
 
-    // If there are no more words, return NULL.
-    if( *current_point == '\0' ) return 0;
+    // If there are no more words, return an empty word.
+    if( *current_point == '\0' ) return word;
 
     // Find the point just past the end of this word.
     const char *end_word = find_next_space( current_point );
 
     // Copy this word into the holding area.
-    word.assign(
-        current_point,
-        static_cast<std::string::size_type>( end_word - current_point)
-    );
+    word.assign( current_point, static_cast<std::string::size_type>( end_word - current_point) );
 
     current_point = end_word;
     return word;
   }
+
 
 // -------------------
 // File_Stream Members
@@ -149,32 +147,20 @@ std::string FileStream::next_word( )
     return word;
 }
 
-// ---------------------
-// Master_Stream Members
-// ---------------------
+// --------------------
+// MasterStream Members
+// --------------------
 
 /*!
- * The following function constructs a master word stream. Note that the stack pointer is
- * initially pointing at a NULL object. This is not normal. Normally the stack pointer points at
- * the top object on the stack. But at construction time, there is no such object. Thus this
- * initial situation needs to be handled as a special case in the other MasterStream functions.
- */
-MasterStream::MasterStream( )
-{
-    // Make all the WordStream pointers NULL.
-    for( int i = 0; i < STACK_SIZE; i++ ) stack[i] = 0;
-    stack_pointer = &stack[0];
-}
-
-
-/*!
- * The destructor properly deletes all the word stream objects on the stack. Here I use the fact
- * that deleting a NULL pointer is safe.
+ * The destructor deletes all the word stream objects on the stack.
  */
 MasterStream::~MasterStream( )
 {
     // Toss out all the active word streams.
-    for( int i = 0; i < STACK_SIZE; i++ ) delete stack[i];
+    while( !stream_stack.empty( ) ) {
+        delete stream_stack.top( );
+        stream_stack.pop( );
+    }
 }
 
 
@@ -192,18 +178,17 @@ std::string MasterStream::next_word( )
     while( 1 ) {
 
         // If there are no word streams left, then we are done.
-        if( *stack_pointer == 0 ) break;
+        if( stream_stack.empty( ) ) break;
 
         // Try to get the next word out of the current word stream.
-        word = (*stack_pointer)->next_word( );
+        word = stream_stack.top( )->next_word( );
 
         // If it worked, return it.
         if( word.length( ) != 0 ) break;
 
         // Otherwise, blow this word stream object away.
-        delete *stack_pointer;
-        *stack_pointer = 0;
-        if( stack_pointer > &stack[0]) stack_pointer--;
+        delete stream_stack.top( );
+        stream_stack.pop( );
     }
 
     return word;
@@ -211,12 +196,7 @@ std::string MasterStream::next_word( )
 
 
 //! The following function puts a new word stream onto the stack.
-void MasterStream::push( WordStream *new_guy )
+void MasterStream::push( WordStream *new_stream )
 {
-    // If the stack would become too high, forget it!
-    if( stack_pointer - stack >= STACK_SIZE - 1 )
-        throw Error( "Program evaluator stack full" );
-
-    if( *stack_pointer != 0 ) stack_pointer++;
-    *stack_pointer = new_guy;
+    stream_stack.push( new_stream );
 }

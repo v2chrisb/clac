@@ -3,7 +3,7 @@
 #
 
 CXX=clang++
-CXXFLAGS=-c -O -emit-llvm -I../clac_entity
+CXXFLAGS=-std=c++11 -c -O -emit-llvm -I../clac_entity
 LLVMLINK=llvm-link
 LLVMLINKFLAGS=
 SOURCES=actions.cpp    \

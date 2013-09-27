@@ -57,6 +57,7 @@ using namespace std;
 #include "words.hpp"
 
 // scr library.
+#include "debug.hpp"
 #include "scr.hpp"
 
 // Application specific.
@@ -115,6 +116,7 @@ SetUp::SetUp( )
 {
     scr::initialize( );
     scr::refresh_on_key( true );
+    scr::initialize_debugging( DBG_TOP );
     // Reload the calculator state (if there's a saved one to be found).
 }
 
@@ -122,6 +124,7 @@ SetUp::SetUp( )
 SetUp::~SetUp( )
 {
     // Save the calculator state.
+    scr::terminate_debugging( );
     scr::terminate( );
     cout << "CLAC Version 0.00a  Compiled: " << AdjDate( __DATE__ ) << '\n'
          << "(C) Copyright 2013 by Peter Chapin and Peter Nikolaidis" << endl;
@@ -340,6 +343,8 @@ bool process_action( Stack &the_stack, char *word_buffer )
 
 void process_words( )
 {
+    scr::Tracer( "process_words", 1 );
+
     EditBuffer new_word;
 
     while (1) {

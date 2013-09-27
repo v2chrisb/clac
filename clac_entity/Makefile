@@ -3,7 +3,7 @@
 #
 
 CXX=clang++
-CXXFLAGS=-c -O -emit-llvm
+CXXFLAGS=-std=c++11 -c -O -emit-llvm
 LLVMLINK=llvm-link
 LLVMLINKFLAGS=
 SOURCES=BinaryEntity.cpp    \
