@@ -1,11 +1,9 @@
-/***************************************************************************
-FILE          : StackWindow.hpp
-LAST REVISION : 2013-03-17
-SUBJECT       : Interface to class StackWindow.
-AUTHORS       : (C) Copyright 2013 by Peter Chapin and Peter Nikolaidis
-
-Objects of this class manage the display of an object from class Stack.
-***************************************************************************/
+/*! \file    StackWindow.hpp
+ *  \brief   Definition of the StackWindow class.
+ *  \author  Peter C. Chapin <PChapin@vtc.vsc.edu>
+ *
+ * Objects of this class manage the display of a Stack object.
+ */
 
 #ifndef STACKWINDOW_HPP
 #define STACKWINDOW_HPP
@@ -29,12 +27,7 @@ class StackWindow : public scr::Window {
     // Associate this window with a stack object.
     void associate( Stack *object ) { the_stack = object; }
 
-    virtual bool process_keystroke( int &key_code );
     virtual scr::ImageBuffer *get_image( );
-    virtual int  cursor_row( );
-    virtual int  cursor_column();
-    virtual bool resize( int new_width, int new_height );
-
 };
 
 #endif

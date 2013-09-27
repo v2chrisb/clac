@@ -1,10 +1,7 @@
-/***************************************************************************
-FILE          : StackWindow.cpp
-LAST REVISION : 2013-03-17
-SUBJECT       : Implementation of the stack window class.
-
-(C) Copyright 2006 by Peter Chapin and Peter Nikolaidis
-***************************************************************************/
+/*! \file    StackWindow.cpp
+ *  \brief   Implementation of the StackWindow class.
+ *  \author  Peter C. Chapin <PChapin@vtc.vsc.edu>
+ */
 
 #include <cstdio>
 #include <cstdlib>
@@ -14,46 +11,28 @@ using namespace std;
 #include "scr.hpp"
 #include "StackWindow.hpp"
 
-bool StackWindow::process_keystroke( int &key_code )
-{
-    // For now, no special handling of keystrokes in the stack window.
-    return true;
-}
-
 scr::ImageBuffer *StackWindow::get_image( )
 {
-    // Erase the existing image.
-    image.clear( );
+    char number_buffer[16];
 
+    image.clear( );
     for( int i = 0; i < image.get_height( ); i++ ) {
+        int item_number = image.get_height( ) - (i + 1);
 
         // Get the right stack level number and print it into the window.
-        char number_buffer[10+1];
-        int  count = sprintf( number_buffer, "%d: ", i + 1 );
-        image.copy( number_buffer, i, 1, image.get_width( ), scr::WHITE );
+        int count = sprintf( number_buffer, "%2d: ", item_number );
+        image.copy( number_buffer, i + 1, 1, image.get_width( ), scr::WHITE );
 
-        Entity *thing = the_stack->get( i );
+        Entity *thing = the_stack->get( item_number );
 
         // If the object exists, print it in the window.
         if( thing != NULL ) {
-            image.copy( thing->display( ).c_str( ), i, count, image.get_width( ) - count, scr::WHITE );
+            image.copy( thing->display( ).c_str( ),
+                        i + 1,
+                        count + 1,
+                        image.get_width( ) - count,
+                        scr::WHITE );
         }
     }
     return &image;
-}
-
-int StackWindow::cursor_row( )
-{
-    return 0;
-}
-
-int StackWindow::cursor_column( )
-{
-    return 0;
-}
-
-bool StackWindow::resize( int new_width, int new_height )
-{
-    // For now, the window can't be resized.
-    return false;
 }
