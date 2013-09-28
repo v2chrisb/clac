@@ -1,8 +1,7 @@
 /*! \file    get.cpp
-    \brief   This file contains the implementation of the general Get functions.
-    \author  Peter C. Chapin <PChapin@vtc.vsc.edu>
-
-*/
+ *  \brief   This file contains the implementation of the general Get functions.
+ *  \author  Peter C. Chapin <PChapin@vtc.vsc.edu>
+ */
 
 #include <cctype>
 #include <cmath>
@@ -26,7 +25,6 @@ using namespace std;
 #include "StringEntity.hpp"
 #include "support.hpp"
 
-#include "EditBuffer.hpp"
 #include "get.hpp"
 #include "global.hpp"
 #include "words.hpp"
@@ -243,11 +241,11 @@ ComplexEntity *get_complex( const string &word )
 
     strcpy( working_buffer, word.c_str( ) );
     while( strchr( working_buffer, ')' ) == NULL ) {
-        EditBuffer word_buffer;
+        string word_buffer;
 
-        word_buffer = global::word_source( ).next_word( ).c_str( );
+        word_buffer = global::word_source( ).next_word( );
         strcat( working_buffer, " " );
-        strcat( working_buffer, word_buffer );
+        strcat( working_buffer, word_buffer.c_str( ) );
     }
     if( !is_complex( working_buffer ) ) {
         error_message( "%s is an invalid complex number", working_buffer );
@@ -278,40 +276,35 @@ ComplexEntity *get_complex( const string &word )
 BinaryEntity *get_binary( const string &word )
 {
     string workspace( word );
-    EditBuffer word_buffer;
+    string word_buffer;
 
     workspace = workspace.substr( 1 );         // Skip the '#'.
     if( workspace.length( ) == 0 ) {
-        word_buffer = global::word_source( ).next_word( ).c_str( );
+        word_buffer = global::word_source( ).next_word( );
     }
     else
-        word_buffer = workspace.c_str( );
+        word_buffer = workspace;
 
     global::BaseType input_base = global::get_base( );
 
-    char *pointer = strchr( (char *)word_buffer, '\0' );
-    --pointer;
-
-    switch( *pointer ) {
+    string::size_type trailing = word_buffer.length( ) - 1;
+    switch( word_buffer[trailing] ) {
       case 'h':
         input_base = global::HEX;
-        *pointer = '\0';
         break;
       case 'b':
         input_base = global::BINARY;
-        *pointer = '\0';
         break;
       case 'd':
         input_base = global::DECIMAL;
-        *pointer = '\0';
         break;
       case 'o': case 'q':
         input_base = global::OCTAL;
-        *pointer = '\0';
         break;
     }
     unsigned long value = 0UL;
-    pointer = word_buffer;
+    string value_buffer( word_buffer.substr( 0, trailing ) );
+    const char *pointer = value_buffer.c_str( );
 
     bool error = false;
     while( *pointer && !error ) {
@@ -355,7 +348,7 @@ BinaryEntity *get_binary( const string &word )
         pointer++;
     }
     if( error ) {
-        error_message( "%s is not a legal binary in the selected base", (char *)word_buffer );
+        error_message( "%s is not a legal binary in the selected base", word_buffer.c_str( ) );
         return NULL;
     }
     else
@@ -369,23 +362,23 @@ BinaryEntity *get_binary( const string &word )
 ListEntity *get_list( const string &word )
 {
     string      workspace( word );
-    EditBuffer  word_buffer;
+    string      word_buffer;
     ListEntity *new_object =  new ListEntity;
     if( new_object == NULL )
         return NULL;
 
     workspace = workspace.substr( 1 );
     if( workspace.length( ) == 0 )
-        word_buffer = global::word_source( ).next_word( ).c_str( );
+        word_buffer = global::word_source( ).next_word( );
     else
-        word_buffer = workspace.c_str( );
+        word_buffer = workspace;
 
-    for( ; word_buffer[static_cast<std::size_t>(0)] != '}'; ) {
-        StringStream stream( (string( word_buffer )) );
+    while( word_buffer[0] != '}' ) {
+        StringStream stream( word_buffer );
         Entity *list_element = get_entity( stream );
         if( list_element != NULL )
             new_object->plus( list_element );
-        word_buffer = global::word_source( ).next_word( ).c_str( );
+        word_buffer = global::word_source( ).next_word( );
     }
     return new_object;
 }
@@ -396,11 +389,11 @@ ListEntity *get_list( const string &word )
  */
 MatrixEntity *get_matrix( const string &word )
 {
-    string     workspace( word );
-    EditBuffer word_buffer;
-    long       row_count    = 0;
-    long       column_count = 0;
-    bool       in_row       = false;
+    string workspace( word );
+    string word_buffer;
+    long   row_count    = 0;
+    long   column_count = 0;
+    bool   in_row       = false;
 
     MatrixEntity *new_object =  new MatrixEntity;
     if( new_object == NULL )
@@ -408,16 +401,16 @@ MatrixEntity *get_matrix( const string &word )
 
     workspace = workspace.substr( 1 );
     if( workspace.length( ) == 0 )
-        word_buffer = global::word_source( ).next_word( ).c_str( );
+        word_buffer = global::word_source( ).next_word( );
     else
-        word_buffer = workspace.c_str( );
+        word_buffer = workspace;
 
     for( ;; ) {
-        if( word_buffer[static_cast<std::size_t>(0)] == '[' ) {
+        if( word_buffer[0] == '[' ) {
             if( in_row ) error_message( "Cannot make a matrix of matrices" );
             else in_row = true;
         }
-        else if( word_buffer[static_cast<std::size_t>(0)] == ']' ) {
+        else if( word_buffer[0] == ']' ) {
             if( in_row ) {
                 row_count++;
                 column_count = 0;
@@ -427,12 +420,12 @@ MatrixEntity *get_matrix( const string &word )
         }
         else {
 // [The Matrix implementation is not mature enough to support adding items to a matrix.]
-//            StringStream stream( (string( word_buffer )) );
+//            StringStream stream( word_buffer );
 //            Entity *matrix_element = get_entity( stream );
 //            if( matrix_element != NULL )
 //                new_object->install( matrix_element, row_count, column_count++ );
         }
-        word_buffer = global::word_source( ).next_word( ).c_str( );
+        word_buffer = global::word_source( ).next_word( );
     }
     return new_object;
 }

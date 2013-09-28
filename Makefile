@@ -38,16 +38,16 @@ clac.bc1:	$(OBJECTS) $(LIBSPICA) $(LIBSCR) $(LIBENTITY) $(LIBENGINE)
 # File Dependencies
 ###################
 
-# Module dependencies -- Produced with 'depend' on Fri Sep 27 19:58:58 2013
+# Module dependencies -- Produced with 'depend' on Sat Sep 28 08:20:46 2013
 
 
 clac.o:	clac.cpp clac_entity/BinaryEntity.hpp clac_entity/Entity.hpp clac_entity/FloatEntity.hpp \
 	clac_entity/IntegerEntity.hpp clac_entity/VeryLong.hpp clac_entity/StringEntity.hpp clac_entity/convert.hpp \
-	clac_entity/support.hpp clac_engine/actions.hpp clac_engine/cstack.hpp clac_engine/EditBuffer.hpp \
-	clac_engine/get.hpp clac_engine/WordStream.hpp clac_engine/global.hpp clac_engine/words.hpp \
-	../Scr/debug.hpp ../Scr/scr.hpp ../Scr/TextWindow.hpp ../Scr/Window.hpp ../Scr/ImageBuffer.hpp \
-	ClacCommandWindow.hpp ../Scr/CommandWindow.hpp ../Scr/Manager.hpp DirectoryWindow.hpp clac_entity/DirectoryEntity.hpp \
-	StackWindow.hpp 
+	clac_entity/support.hpp clac_engine/actions.hpp clac_engine/cstack.hpp clac_engine/get.hpp \
+	clac_engine/WordStream.hpp clac_engine/global.hpp clac_engine/words.hpp ../Scr/debug.hpp \
+	../Scr/scr.hpp ../Scr/TextWindow.hpp ../Scr/Window.hpp ../Scr/ImageBuffer.hpp ../Scr/MessageWindow.hpp \
+	../Scr/Shadow.hpp ClacCommandWindow.hpp ../Scr/CommandWindow.hpp ../Scr/Manager.hpp DirectoryWindow.hpp \
+	clac_entity/DirectoryEntity.hpp StackWindow.hpp 
 
 ClacCommandWindow.o:	ClacCommandWindow.cpp ClacCommandWindow.hpp ../Scr/CommandWindow.hpp ../Scr/ImageBuffer.hpp \
 	../Scr/scr.hpp ../Scr/Manager.hpp ../Scr/Window.hpp clac_engine/global.hpp clac_entity/VeryLong.hpp \

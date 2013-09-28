@@ -47,7 +47,6 @@ using namespace std;
 
 // clac_engine library.
 #include "actions.hpp"
-#include "EditBuffer.hpp"
 #include "get.hpp"
 #include "global.hpp"
 #include "words.hpp"
