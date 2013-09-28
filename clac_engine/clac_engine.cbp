@@ -4,14 +4,14 @@
 	<Project>
 		<Option title="clac_engine" />
 		<Option pch_mode="2" />
-		<Option compiler="clang" />
+		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/libclac_engine" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/Debug/" />
 				<Option type="2" />
-				<Option compiler="clang" />
+				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-Wall" />
@@ -23,7 +23,7 @@
 				<Option working_dir="" />
 				<Option object_output="obj/Release/" />
 				<Option type="2" />
-				<Option compiler="clang" />
+				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-O2" />
@@ -35,10 +35,9 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-std=c++0x" />
 			<Add directory="../clac_entity" />
 		</Compiler>
-		<Unit filename="EditBuffer.cpp" />
-		<Unit filename="EditBuffer.hpp" />
 		<Unit filename="WordStream.cpp" />
 		<Unit filename="WordStream.hpp" />
 		<Unit filename="actions.cpp" />
