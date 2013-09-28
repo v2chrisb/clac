@@ -143,7 +143,6 @@
   <ItemGroup>
     <ClCompile Include="actions.cpp" />
     <ClCompile Include="cstack.cpp" />
-    <ClCompile Include="EditBuffer.cpp" />
     <ClCompile Include="get.cpp" />
     <ClCompile Include="global.cpp" />
     <ClCompile Include="words.cpp" />
@@ -152,7 +151,6 @@
   <ItemGroup>
     <ClInclude Include="actions.hpp" />
     <ClInclude Include="cstack.hpp" />
-    <ClInclude Include="EditBuffer.hpp" />
     <ClInclude Include="get.hpp" />
     <ClInclude Include="global.hpp" />
     <ClInclude Include="words.hpp" />

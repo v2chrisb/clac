@@ -23,9 +23,6 @@
     <ClCompile Include="actions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EditBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="get.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -47,9 +44,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="words.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EditBuffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WordStream.hpp">

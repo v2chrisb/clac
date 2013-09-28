@@ -17,13 +17,13 @@
     <ClCompile Include="record_f.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CommandWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DirectoryWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StackWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ClacCommandWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -31,13 +31,13 @@
     <ClInclude Include="record_f.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CommandWindow.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DirectoryWindow.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StackWindow.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ClacCommandWindow.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
