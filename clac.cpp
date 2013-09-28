@@ -173,25 +173,33 @@ static char *AdjDate(const char *ANSI_Date)
 
 class SetUp {
 public:
-    SetUp( );
+    SetUp( bool use_debugger );
    ~SetUp( );
+private:
+    bool debugging_on;
 };
 
 
-SetUp::SetUp( )
+SetUp::SetUp( bool use_debugger ) : debugging_on( false )
 {
     scr::initialize( );
     scr::refresh_on_key( true );
     scr::MessageWindow::set_descriptors( message_descriptors );
-    scr::initialize_debugging( DBG_TOP );
-    // Reload the calculator state (if there's a saved one to be found).
+
+    if( use_debugger ) {
+        scr::initialize_debugging( DBG_TOP );
+        debugging_on = true;
+    }
+    // TODO: Reload the calculator state (if there's a saved one to be found).
 }
 
 
 SetUp::~SetUp( )
 {
     // Save the calculator state.
-    scr::terminate_debugging( );
+    if( debugging_on ) {
+        scr::terminate_debugging( );
+    }
     scr::terminate( );
     cout << "CLAC Version 0.00a  Compiled: " << AdjDate( __DATE__ ) << '\n'
          << "(C) Copyright 2013 by Peter Chapin and Peter Nikolaidis" << endl;
@@ -462,10 +470,17 @@ bool process_words( )
 //           Main Program
 //==================================
 
-int Main( )
+int Main( int argc, char **argv )
 {
-    // The SetUp object can't be global because it (indirectly) makes use of global objects.
-    SetUp the_program;
+    bool use_debugger = false;
+
+    // Command line analysis.
+    // TODO: Improve and generalize the handling of the command line.
+    for( int i = 1; i < argc; ++i ) {
+        if( strcmp( argv[i], "-d" ) == 0 ) use_debugger = true;
+    }
+
+    SetUp the_program( use_debugger );
     const int screen_rows = scr::number_of_rows( );
     const int screen_cols = scr::number_of_columns( );
     const int half_width  = screen_cols / 2;
@@ -496,12 +511,13 @@ int Main( )
 //           The real main
 //===================================
 
-int main( )
+int main( int argc, char **argv )
 {
+    // Set the default exit status in case an unhandled exception propagates through main.
     int return_value = EXIT_FAILURE;
 
     try {
-        return_value = Main();
+        return_value = Main( argc, argv );
     }
     catch (...) {
         cerr << "Panic! Unhandled exception propagated through main()" << endl;
