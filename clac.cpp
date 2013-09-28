@@ -1,36 +1,29 @@
-/***************************************************************************
-FILE          : clac.cpp
-LAST REVISION : 2013-03-17
-SUBJECT       : clac main program.
-
-(C) Copyright 2013 by Peter Chapin and Peter Nikolaidis
-
---**--
-[Put comments here]
---**--
-
-LICENSE
-
-This program is free software; you can redistribute it and/or modify it under the terms of the
-GNU General Public License as published by the Free Software Foundation; either version 2 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
-the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with this program; if
-not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA
-
-Please send comments and bug reports to
-
-     Peter C. Chapin
-     c/o Computer Information Systems Department
-     Vermont Technical College
-     Williston, VT 05495
-     PChapin@vtc.vsc.edu
-***************************************************************************/
+/*! \file    clac.cpp
+ *  \brief   Clac main program.
+ *  \author  Peter C. Chapin <PChapin@vtc.vsc.edu> and Peter Nikolaidis
+ *
+ * LICENSE
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of
+ * the GNU General Public License as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+ * the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program; if
+ * not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ * 02111-1307 USA
+ *
+ * Please send comments and bug reports to
+ *
+ *      Peter C. Chapin
+ *      c/o Computer Information Systems Department
+ *      Vermont Technical College
+ *      Williston, VT 05495
+ *      PChapin@vtc.vsc.edu
+ */
 
 #include <cstdlib>
 #include <cstring>
@@ -62,6 +55,7 @@ using namespace std;
 
 // Application specific.
 #include "ClacCommandWindow.hpp"
+#include "DirectoryWindow.hpp"
 #include "StackWindow.hpp"
 
 //===========================================
@@ -396,13 +390,27 @@ int Main( )
 {
     // The SetUp object can't be global because it (indirectly) makes use of global objects.
     SetUp the_program;
+    const int screen_rows = scr::number_of_rows( );
+    const int screen_cols = scr::number_of_columns( );
+    const int half_width  = screen_cols / 2;
 
-    scr::Manager  window_manager;
-    StackWindow   stack_view( window_manager, 1, 1, 40, 10 );
-    ClacCommandWindow command_line( &window_manager, 15, 1, 78, 1 );
+    scr::Manager window_manager;
 
-    command_line.set_prompt( "=> " );
+    // Create windows.
+    StackWindow stack_view(
+        window_manager,  2,  2, half_width - 2, screen_rows - 5 );
+
+    DirectoryWindow directory_view(
+        window_manager,  2, half_width + 2, half_width - 2, screen_rows - 5 );
+
+    ClacCommandWindow command_view(
+        &window_manager, screen_rows - 1,  2, screen_cols - 2,  1 );
+
+    // Initialize windows.
     stack_view.associate( &global::the_stack( ) );
+    command_view.set_prompt( "=> " );
+
+    // Interact with the user.
     window_manager.input_loop( );
 
     return 0;
@@ -423,14 +431,4 @@ int main( )
         cerr << "Panic! Unhandled exception propagated through main()" << endl;
     }
     return return_value;
-}
-
-//=================================
-//          Memory_Panic
-//=================================
-
-void memory_panic( )
-{
-    // There is nothing we can do.
-    throw "Out of memory";
 }

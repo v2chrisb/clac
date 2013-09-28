@@ -14,7 +14,7 @@ public:
       scr::CommandWindow( my_manager, row, column, width, height )
       { }
 
-    bool process_keystroke( int &key_code );
+    bool process_keystroke( int &key_code ) override;
 };
 
 #endif

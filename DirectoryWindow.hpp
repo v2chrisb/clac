@@ -1,43 +1,33 @@
-/***************************************************************************
-FILE          : dirwin.hpp
-LAST REVISION : September 1991
-SUBJECT       : Interface to class Stack_Window.
-
-     (C) Copyright 1991 by Peter Chapin and Peter Nikolaidis
-
-Objects of this class manage the display of an object from class Stack.
-
-     Please send comments and bug reports to
-
-     Peter Chapin
-     P.O. Box 317
-     Randolph Center, VT 05061
-     pchapin@twilight.vtc.vsc.edu
-***************************************************************************/
+/*! \file    DirectoryWindow.hpp
+ *  \brief   Definition of the DirectoryWindow class.
+ *  \author  Peter C. Chapin <PChapin@vtc.vsc.edu>
+ *
+ * Objects of this class manage the display of a DirectoryEntity.
+ */
 
 #ifndef DIRECTORYWINDOW_HPP
 #define DIRECTORYWINDOW_HPP
 
-#include "DirectoryEntity.hpp"
+// The Scr library.
+#include "ImageBuffer.hpp"
 #include "Manager.hpp"
+#include "Window.hpp"
+
+#include "DirectoryEntity.hpp"
 
 class DirectoryWindow : public scr::Window {
-  private:
-    DirectoryEntity *The_Directory;
-
-  public:
+public:
     // Be sure there is no association initially.
-    DirectoryWindow(scr::Manager &M, int W, int H) :
-      Window( &M, 0, 0, W, H ), The_Directory(NULL) { }
+    DirectoryWindow( scr::Manager &M, int R, int C, int W, int H ) :
+        scr::Window( &M, R, C, W, H ), the_directory( nullptr ) { }
 
-    // Associate this window with a directory object.
-    void Associate(DirectoryEntity *Object) { The_Directory = Object; }
+    // Associate this window with a DirectoryEntity object.
+    void associate( DirectoryEntity *object ) { the_directory = object; }
 
-    // Show the window and display the directory inside the window.
-    void Show();
+    virtual scr::ImageBuffer *get_image( ) override;
 
-    // Show the window and let the user scroll through the directory, etc.
-    void Display();
+private:
+    DirectoryEntity *the_directory;
 };
 
 #endif

@@ -6,10 +6,10 @@
 #include <cstdio>
 #include <cstdlib>
 
-using namespace std;
-
 #include "scr.hpp"
 #include "StackWindow.hpp"
+
+using namespace std;
 
 scr::ImageBuffer *StackWindow::get_image( )
 {
