@@ -1,64 +1,14 @@
 /*! \file    support.cpp
-    \brief   Definitions of various support functions.
-    \author  Peter C. Chapin <PChapin@vtc.vsc.edu>
-
-*/
+ *  \brief   Definitions of various support functions.
+ *  \author  Peter C. Chapin <PChapin@vtc.vsc.edu>
+ */
 
 #include <cctype>
-#include <cstdarg>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
 
 #include "DisplayState.hpp"
 #include "support.hpp"
 
 using namespace std;
-
-void error_message( const char *message, ... )
-{
-    static const char *insults[] = {
-        "",
-        "",     // This makes insults a little less frequent.
-        "",
-        ", bozo",
-        ", knave",
-        ", you dork",
-        ", you idiot",
-        ", you moron",
-        ", you jackass",
-        ", you dumb jerk",
-        ", you blockhead",
-        ", you stupid fool",
-        ", you ignorant fool",
-        ", you foolish human",
-        ", you moronic idiot",
-        ", it would be illogical",
-        0
-    };
-    const unsigned int insult_count = sizeof( insults ) / sizeof( char * );
-
-    va_list ap;
-    static bool do_seed = true;
-
-    if( do_seed ) {
-        time_t raw = time( 0 );
-        srand( static_cast< unsigned int >( raw ) );
-        do_seed = false;
-    }
-
-    va_start( ap, message );
-    char message_buffer[128+1];
-    vsprintf( message_buffer, message, ap );
-
-    // Generate random insult.
-    unsigned index = rand( ) % insult_count;
-    strcat( message_buffer, insults[index] );
-
-    // What happens to the message buffer anyway? It appears to go nowhere.
-}
-
 
 void underflow( )
 {

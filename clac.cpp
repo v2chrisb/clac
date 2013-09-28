@@ -25,8 +25,11 @@
  *      PChapin@vtc.vsc.edu
  */
 
+#include <cstdarg>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <ctype.h>
 #include <iostream>
 #include <iomanip>
@@ -51,12 +54,81 @@ using namespace std;
 
 // scr library.
 #include "debug.hpp"
+#include "MessageWindow.hpp"
 #include "scr.hpp"
 
 // Application specific.
 #include "ClacCommandWindow.hpp"
 #include "DirectoryWindow.hpp"
 #include "StackWindow.hpp"
+
+//=====================================
+//           Message Handling
+//=====================================
+
+static scr::MessageWindowDescriptor message_descriptors[] = {
+    // For scr::MESSAGE_WINDOW_MESSAGE
+    { scr::WHITE, scr::SINGLE_LINE, scr::WHITE, NULL, scr::WHITE, scr::MESSAGE_WINDOW_ANY },
+
+    // For scr::MESSAGE_WINDOW_PROMPT
+    { scr::WHITE, scr::SINGLE_LINE, scr::WHITE, NULL, scr::WHITE, scr::MESSAGE_WINDOW_ANY },
+
+    // For scr::MESSAGE_WINDOW_WARNING
+    { scr::WHITE, scr::SINGLE_LINE, scr::WHITE, NULL, scr::WHITE, scr::MESSAGE_WINDOW_ANY },
+
+    // For scr::MESSAGE_WINDOW_ERROR
+    { scr::WHITE, scr::SINGLE_LINE, scr::WHITE, NULL, scr::WHITE, scr::MESSAGE_WINDOW_ANY },
+
+    // For scr::MESSAGE_WINDOW_INT_ERROR
+    { scr::WHITE, scr::SINGLE_LINE, scr::WHITE, NULL, scr::WHITE, scr::MESSAGE_WINDOW_ANY }
+};
+
+//! Displays an error message.
+/*!
+ * This function is the master error message handler for all components of Clac. It is actually
+ * declared in a low level header (support.hpp) in the Clac entity library. Any code that uses
+ * Clac entities must provide an implementation of this function that is application specific.
+ */
+void error_message( const char *message, ... )
+{
+    static const char *insults[] = {
+        "you blockhead",
+        "you bozo",
+        "you dimwit",
+        "you dumb jerk",
+        "you foolish human",
+        "you idiot",
+        "you ignorant fool",
+        "you moron",
+        "you moronic idiot",
+        "you nimrod",
+        "you stupid fool",
+        0
+    };
+    const unsigned int insult_count = sizeof( insults ) / sizeof( char * );
+
+    va_list ap;
+    static bool do_seed = true;
+
+    if( do_seed ) {
+        time_t raw = time( 0 );
+        srand( static_cast< unsigned int >( raw ) );
+        do_seed = false;
+    }
+
+    va_start( ap, message );
+    char message_buffer[128+1];
+    vsprintf( message_buffer, message, ap );
+
+    // Generate a random insult and append it to the error message.
+    unsigned index = rand( ) % insult_count;
+    strcat( message_buffer, " (" );
+    strcat( message_buffer, insults[index] );
+    strcat( message_buffer, ")" );
+
+    // What happens to the message buffer anyway? It appears to go nowhere.
+    scr::MessageWindow error_window( message_buffer, scr::MESSAGE_WINDOW_ERROR );
+}
 
 //===========================================
 //           Program Initialization
@@ -110,6 +182,7 @@ SetUp::SetUp( )
 {
     scr::initialize( );
     scr::refresh_on_key( true );
+    scr::MessageWindow::set_descriptors( message_descriptors );
     scr::initialize_debugging( DBG_TOP );
     // Reload the calculator state (if there's a saved one to be found).
 }
@@ -351,12 +424,12 @@ bool process_words( )
     scr::Tracer( "process_words", 1 );
 
     while (1) {
-        std::string new_word( global::word_source( ).next_word( ) );
-
-        // The master stream is exhausted.
-        if( new_word.length( ) == 0 ) return true;
-
         try {
+            std::string new_word( global::word_source( ).next_word( ) );
+        
+            // The master stream is exhausted.
+            if( new_word.length( ) == 0 ) return true;
+
             // See if we got the null word. [Can this ever happen?]
             if( new_word[0] == '\0' ) {
                 do_dup( global::the_stack( ) );
@@ -377,7 +450,10 @@ bool process_words( )
                 global::the_stack( ).push( new_object );
         }
         catch( const char *the_message ) {
-            error_message( "Exception caught! %s", the_message );
+            error_message( "Exception: %s", the_message );
+        }
+        catch( const std::exception &e ) {
+            error_message( "Exception: %s", e.what( ) );
         }
     }
 }
